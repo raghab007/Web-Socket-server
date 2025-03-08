@@ -1,0 +1,30 @@
+import { WebSocketServer } from 'ws';
+
+const wss = new WebSocketServer({ port: 8086 });
+let user = 0;
+const allUsers = [];
+console.log(JSON.parse('{"message":"hello world"}'))
+wss.on('connection', function connection(ws) {
+  ws.on('error', console.error);
+  user++
+  console.log("user connected"+ user)
+  ws.on('message', function message(data) {
+    const payload = JSON.parse(data.toString())
+    console.log(payload)
+    if(payload.type=="join"){
+        allUsers.push({
+            roomcode:payload.roomcode,
+            socket:ws
+        })
+        console.log(allUsers)
+    }else if (payload.type=="message"){
+        allUsers.forEach(user=>{
+            if(user.roomcode==payload.roomcode){
+                user.socket.send(payload.message)
+            }
+        })
+    }
+    
+  });
+ 
+});
