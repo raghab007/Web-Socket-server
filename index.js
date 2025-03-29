@@ -12,13 +12,15 @@ wss.on('connection', function connection(ws) {
     if(payload.type=="join"){
         allUsers.push({
             roomcode:payload.roomcode,
-            socket:ws
+            socket:ws,
+            userName: payload.userName
         })
         console.log(allUsers)
     }else if (payload.type=="message"){
         allUsers.forEach(user=>{
-            if(user.roomcode==payload.roomcode && user.socket!=ws){
-                user.socket.send(JSON.stringify({message:payload.message, username:payload.username}))
+            if(user.roomcode==payload.roomcode && user.socket!=ws && user.userName!=payload.userName){
+                //user.socket.send(JSON.stringify({message:payload.message, username:payload.username}))
+                user.socket.send(payload.message)
             }
         })
     }
